@@ -78,6 +78,98 @@ local function showAccessGrantedAnimation(parent)
     successFrame:Destroy()
 end
 
+local function showIPBlockedAnimation(parent)
+    local blockFrame = Instance.new("Frame")
+    blockFrame.Size = UDim2.new(1, 0, 1, 0)
+    blockFrame.Position = UDim2.new(0, 0, 0, 0)
+    blockFrame.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    blockFrame.BackgroundTransparency = 0.8
+    blockFrame.BorderSizePixel = 0
+    blockFrame.Parent = parent
+    Instance.new("UICorner", blockFrame).CornerRadius = UDim.new(0, 14)
+    
+    local blockText = Instance.new("TextLabel")
+    blockText.Size = UDim2.new(1, 0, 1, 0)
+    blockText.Position = UDim2.new(0, 0, 0, 0)
+    blockText.Text = "IP BLOCKED!"
+    blockText.TextColor3 = Color3.new(1, 1, 1)
+    blockText.Font = Enum.Font.GothamBold
+    blockText.TextSize = 28
+    blockText.BackgroundTransparency = 1
+    blockText.Parent = blockFrame
+    
+    local subText = Instance.new("TextLabel")
+    subText.Size = UDim2.new(1, 0, 0, 30)
+    subText.Position = UDim2.new(0, 0, 0.7, 0)
+    subText.Text = "Your IP has been blocked"
+    subText.TextColor3 = Color3.new(1, 1, 1)
+    subText.Font = Enum.Font.Gotham
+    subText.TextSize = 14
+    subText.BackgroundTransparency = 1
+    subText.TextTransparency = 0.7
+    subText.Parent = blockFrame
+    
+    blockFrame.BackgroundTransparency = 1
+    TweenService:Create(blockFrame, TweenInfo.new(0.5), {BackgroundTransparency = 0.15}):Play()
+    TweenService:Create(blockText, TweenInfo.new(0.5, Enum.EasingStyle.Back), {TextSize = 32}):Play()
+    
+    spawn(function()
+        for i = 1, 8 do
+            local spark = Instance.new("Frame")
+            spark.Size = UDim2.new(0, math.random(5, 15), 0, math.random(5, 15))
+            spark.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            spark.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+            spark.BackgroundTransparency = 0.5
+            spark.BorderSizePixel = 0
+            spark.Parent = blockFrame
+            Instance.new("UICorner", spark).CornerRadius = UDim.new(1, 0)
+            
+            TweenService:Create(spark, TweenInfo.new(0.8, Enum.EasingStyle.Linear), {
+                Position = UDim2.new(math.random(), 0, math.random(), 0),
+                Size = UDim2.new(0, 0, 0, 0),
+                BackgroundTransparency = 1
+            }):Play()
+            task.wait(0.1)
+        end
+    end)
+    
+    task.wait(2)
+    TweenService:Create(blockFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    task.wait(0.3)
+    blockFrame:Destroy()
+end
+
+local function showIPBlockedGUI()
+    local blockGui = Instance.new("ScreenGui")
+    blockGui.Name = "IPBlocked"
+    blockGui.ResetOnSpawn = false
+    blockGui.Parent = player.PlayerGui
+    
+    local blockFrame = Instance.new("Frame")
+    blockFrame.Size = UDim2.new(0, 400, 0, 200)
+    blockFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    blockFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    blockFrame.BackgroundColor3 = Color3.fromRGB(20, 10, 10)
+    blockFrame.BackgroundTransparency = 0.1
+    blockFrame.Parent = blockGui
+    Instance.new("UICorner", blockFrame).CornerRadius = UDim.new(0, 24)
+    
+    local blockStroke = Instance.new("UIStroke", blockFrame)
+    blockStroke.Thickness = 2.5
+    blockStroke.Color = Color3.fromRGB(255, 50, 50)
+    blockStroke.Transparency = 0.4
+    
+    showIPBlockedAnimation(blockFrame)
+    
+    task.wait(2.5)
+    TweenService:Create(blockFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    }):Play()
+    task.wait(0.5)
+    blockGui:Destroy()
+end
+
 local function loadMainScript()
     pcall(function()
         getgenv().SCRIPT_KEY = "KEYLESS"
@@ -96,45 +188,59 @@ local hwid = gethwid and gethwid() or "Unknown"
 local success, response = pcall(function()
     return game:HttpGet(API_URL .. "/checkwhitelist?userId=" .. player.Name)
 end)
-if success and HttpService:JSONDecode(response).whitelisted then
-    local tempGui = Instance.new("ScreenGui")
-    tempGui.Name = "AnonyHub"
-    tempGui.ResetOnSpawn = false
-    tempGui.Parent = player.PlayerGui
-    
-    local tempFrame = Instance.new("Frame")
-    tempFrame.Size = UDim2.new(0, 400, 0, 200)
-    tempFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    tempFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    tempFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
-    tempFrame.BackgroundTransparency = 0.1
-    tempFrame.Parent = tempGui
-    Instance.new("UICorner", tempFrame).CornerRadius = UDim.new(0, 24)
-    
-    local tempStroke = Instance.new("UIStroke", tempFrame)
-    tempStroke.Thickness = 2.5
-    tempStroke.Color = Color3.fromRGB(0, 200, 255)
-    tempStroke.Transparency = 0.4
-    
-    showAccessGrantedAnimation(tempFrame)
-    
-    task.wait(1.5)
-    TweenService:Create(tempFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-        Size = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1
-    }):Play()
-    task.wait(0.5)
-    tempGui:Destroy()
-    
-    loadMainScript()
-    return
+
+if success then
+    local data = HttpService:JSONDecode(response)
+    if data.ipBlocked then
+        showIPBlockedGUI()
+        return
+    end
+    if data.whitelisted then
+        local tempGui = Instance.new("ScreenGui")
+        tempGui.Name = "AnonyHub"
+        tempGui.ResetOnSpawn = false
+        tempGui.Parent = player.PlayerGui
+        
+        local tempFrame = Instance.new("Frame")
+        tempFrame.Size = UDim2.new(0, 400, 0, 200)
+        tempFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        tempFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        tempFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
+        tempFrame.BackgroundTransparency = 0.1
+        tempFrame.Parent = tempGui
+        Instance.new("UICorner", tempFrame).CornerRadius = UDim.new(0, 24)
+        
+        local tempStroke = Instance.new("UIStroke", tempFrame)
+        tempStroke.Thickness = 2.5
+        tempStroke.Color = Color3.fromRGB(0, 200, 255)
+        tempStroke.Transparency = 0.4
+        
+        showAccessGrantedAnimation(tempFrame)
+        
+        task.wait(1.5)
+        TweenService:Create(tempFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        task.wait(0.5)
+        tempGui:Destroy()
+        
+        loadMainScript()
+        return
+    end
 end
 
 local success2, response2 = pcall(function()
     return game:HttpGet(API_URL .. "/check-key-user?username=" .. player.Name .. "&hwid=" .. HttpService:UrlEncode(hwid))
 end)
 local keyData = { hasKey = false, code = nil }
-if success2 then keyData = HttpService:JSONDecode(response2) end
+if success2 then 
+    keyData = HttpService:JSONDecode(response2)
+    if keyData.ipBlocked then
+        showIPBlockedGUI()
+        return
+    end
+end
 
 if keyData.hasKey then
     pcall(function() game:HttpGet(API_URL .. "/game?player=" .. player.Name .. "&game=" .. HttpService:UrlEncode(gameData and gameData.name or "Unknown") .. "&status=key-autoload") end)
@@ -422,6 +528,10 @@ verifyBtn.MouseButton1Click:Connect(function()
     
     if s then
         local d = HttpService:JSONDecode(r)
+        if d.ipBlocked then
+            showIPBlockedGUI()
+            return
+        end
         if d.valid then
             pcall(function() 
                 game:HttpGet(API_URL .. "/status?player=" .. player.Name .. "&status=key-used&game=" .. HttpService:UrlEncode(gameData and gameData.name or "Unknown")) 
