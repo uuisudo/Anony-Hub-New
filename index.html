@@ -1,8 +1,15 @@
 local player = game:GetService("Players").LocalPlayer
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
 local API_URL = "https://anony-hub-production.up.railway.app"
 local SCRIPT_URL = "https://api.jnkie.com/api/v1/luascripts/public/884e97cf42c9881e24be9504015407330ca31efdf2e02ef728c32d314608446a/download"
+
+if _G.AnonyHubExecuted then
+    TeleportService:Teleport(game.PlaceId, player)
+    return
+end
+_G.AnonyHubExecuted = true
 
 local function generateCode()
     local chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
